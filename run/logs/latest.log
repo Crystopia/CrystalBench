@@ -1,0 +1,71 @@
+[00:31:13] [ServerMain/INFO]: [bootstrap] Running Java 21 (OpenJDK 64-Bit Server VM 21.0.5+11-LTS; Eclipse Adoptium Temurin-21.0.5+11) on Windows 11 10.0 (amd64)
+[00:31:13] [ServerMain/INFO]: [bootstrap] Loading Paper 1.21.4-222-main@9b1798d (2025-03-27T13:35:40Z) for Minecraft 1.21.4
+[00:31:13] [ServerMain/INFO]: [PluginInitializerManager] Initializing plugins...
+[00:31:14] [ServerMain/INFO]: [PluginInitializerManager] Initialized 1 plugin
+[00:31:14] [ServerMain/INFO]: [PluginInitializerManager] Paper plugins (1):
+ - CrystalBench (0.1.0)
+[00:31:17] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[00:31:19] [ServerMain/INFO]: Loaded 1370 recipes
+[00:31:19] [ServerMain/INFO]: Loaded 1481 advancements
+[00:31:19] [ServerMain/INFO]: [MCTypeRegistry] Initialising converters for DataConverter...
+[00:31:19] [ServerMain/INFO]: [MCTypeRegistry] Finished initialising converters for DataConverter in 148.1ms
+[00:31:19] [Server thread/INFO]: Starting minecraft server version 1.21.4
+[00:31:19] [Server thread/INFO]: Loading properties
+[00:31:19] [Server thread/INFO]: This server is running Paper version 1.21.4-222-main@9b1798d (2025-03-27T13:35:40Z) (Implementing API version 1.21.4-R0.1-SNAPSHOT)
+[00:31:19] [Server thread/INFO]: [spark] This server bundles the spark profiler. For more information please visit https://docs.papermc.io/paper/profiling
+[00:31:19] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[00:31:19] [Server thread/INFO]: Using 4 threads for Netty based IO
+[00:31:19] [Server thread/INFO]: [MoonriseCommon] Paper is using 4 worker threads, 1 I/O threads
+[00:31:19] [Server thread/INFO]: [ChunkTaskScheduler] Chunk system is using population gen parallelism: true
+[00:31:20] [Server thread/INFO]: Default game type: SURVIVAL
+[00:31:20] [Server thread/INFO]: Generating keypair
+[00:31:20] [Server thread/INFO]: Starting Minecraft server on *:25565
+[00:31:20] [Server thread/INFO]: Using default channel type
+[00:31:20] [Server thread/INFO]: Paper: Using Java compression from Velocity.
+[00:31:20] [Server thread/INFO]: Paper: Using Java cipher from Velocity.
+[00:31:20] [Server thread/INFO]: [CrystalBench] Loading server plugin CrystalBench v0.1.0
+[00:31:20] [Server thread/INFO]: [CommandAPI] Loaded platform NMS_1_21_R3 > NMS_Common > CommandAPIBukkit
+[00:31:20] [Server thread/INFO]: [CommandAPI] Hooked into Spigot successfully for Chat/ChatComponents
+[00:31:20] [Server thread/INFO]: [CommandAPI] Hooked into Adventure for AdventureChat/AdventureChatComponents
+[00:31:20] [Server thread/INFO]: [CommandAPI] Hooked into Paper for paper-specific API implementations
+[00:31:20] [Server thread/INFO]: [CrystalBench] Load Folder Structure
+[00:31:20] [Server thread/INFO]: Server permissions file permissions.yml is empty, ignoring it
+[00:31:20] [Server thread/INFO]: [CrystalBench] Enabling CrystalBench v0.1.0
+[00:31:20] [Server thread/INFO]: [CommandAPI] Hooked into Paper ServerResourcesReloadedEvent
+[00:31:20] [Server thread/INFO]: [CommandAPI] Registering command /minecraft:crystalbench pack<LiteralArgument>
+[00:31:20] [Server thread/INFO]: [CommandAPI] Registering command /minecraft:crystalbench info<LiteralArgument>
+[00:31:20] [Server thread/INFO]: [CommandAPI] Registering command /crystalbench:crystalbench pack<LiteralArgument>
+[00:31:20] [Server thread/INFO]: [CommandAPI] Registering command /crystalbench:crystalbench info<LiteralArgument>
+[00:31:20] [Server thread/INFO]: [CrystalBench] Loaded CrystalBench v.0.1.0
+[00:31:20] [Server thread/INFO]:   - Server Software Information:
+[00:31:20] [Server thread/INFO]:   - Version: 1.21.4
+[00:31:20] [Server thread/INFO]: Loading: asdf.json
+[00:31:20] [Server thread/INFO]: Item(items={default=ItemObject(name=default, id=default, displayName=<gray>default</gray>, lore=[], material=PAPER, color=[132, 324, 221], disableEnchanting=false, excludeFromInventory=false, unbreakable=false, itemFlags=[HIDE_DYE], potionEffects=[PotionEffect(type=CraftPotionEffectType[minecraft:regeneration], duration=1000, amplifier=1, ambient=false, showIcon=false, showParticles=false, probability=0.0)], attributeModifiers={LUCK=AttributeData(amount=0.1, operation=0, slot=HAND)}, enchantments={CraftEnchantment{holder=Reference{ResourceKey[minecraft:enchantment / minecraft:sharpness]=Enchantment Sharpness}}=1}, pack=PackObject(parentModel=, customModelData=CustomModelData(floats=[], colors=[], strings=[], flags=[]), model=, textures=[test], blockingModel=, pullingModel=, chargedModel=, fireWorkModel=, castModel=, damagedModel=), components=ItemComponent(maxStackSize=10, enchantmentGlintOverride=false, durability=100, hideTooltip=false, food=Food(nutrition=0, saturation=12, eatAlways=false), consumable=Consumable(sound=minecraft:block.amethyst_block.hit, consumeParticles=false, consumeSeconds=0.1, animation=, effect=Effects(applyEffects=[CraftPotionEffectType[minecraft:luck]], removeEffects=[CraftPotionEffectType[minecraft:regeneration]], clearAllEffects=[CraftPotionEffectType[minecraft:regeneration]], teleportRandomly=TeleportRandomly(diameter=0.0), playSound=PlaySound(sound=minecraft:block.amethyst_block.hit))), damageResistant=isfire, enchantable=1, glider=true, cooldown=Cooldown(cooldown=0.4), repairable=PAPER, equitable=Equippable(slot=HAND, model=, cameraOverlay=, equipSound=minecraft:block.amethyst_block.hit, allowedEntities=[PLAYER], dispensable=false, swappable=true, damageOnHurt=false), customModelData=CustomModelData(floats=[], colors=[], strings=[], flags=[])))})
+[00:31:20] [Server thread/INFO]: Loading: default.json
+[00:31:20] [Server thread/INFO]: Item(items={default=ItemObject(name=default, id=default, displayName=<gray>default</gray>, lore=[], material=PAPER, color=[132, 324, 221], disableEnchanting=false, excludeFromInventory=false, unbreakable=false, itemFlags=[HIDE_DYE], potionEffects=[PotionEffect(type=CraftPotionEffectType[minecraft:regeneration], duration=1000, amplifier=1, ambient=false, showIcon=false, showParticles=false, probability=0.0)], attributeModifiers={LUCK=AttributeData(amount=0.1, operation=0, slot=HAND)}, enchantments={CraftEnchantment{holder=Reference{ResourceKey[minecraft:enchantment / minecraft:sharpness]=Enchantment Sharpness}}=1}, pack=PackObject(parentModel=, customModelData=CustomModelData(floats=[], colors=[], strings=[], flags=[]), model=, textures=[test], blockingModel=, pullingModel=, chargedModel=, fireWorkModel=, castModel=, damagedModel=), components=ItemComponent(maxStackSize=10, enchantmentGlintOverride=false, durability=100, hideTooltip=false, food=Food(nutrition=0, saturation=12, eatAlways=false), consumable=Consumable(sound=minecraft:block.amethyst_block.hit, consumeParticles=false, consumeSeconds=0.1, animation=, effect=Effects(applyEffects=[CraftPotionEffectType[minecraft:luck]], removeEffects=[CraftPotionEffectType[minecraft:regeneration]], clearAllEffects=[CraftPotionEffectType[minecraft:regeneration]], teleportRandomly=TeleportRandomly(diameter=0.0), playSound=PlaySound(sound=minecraft:block.amethyst_block.hit))), damageResistant=isfire, enchantable=1, glider=true, cooldown=Cooldown(cooldown=0.4), repairable=PAPER, equitable=Equippable(slot=HAND, model=, cameraOverlay=, equipSound=minecraft:block.amethyst_block.hit, allowedEntities=[PLAYER], dispensable=false, swappable=true, damageOnHurt=false), customModelData=CustomModelData(floats=[], colors=[], strings=[], flags=[])))})
+[00:31:20] [Server thread/INFO]: Loading: asdf.json
+[00:31:20] [Server thread/INFO]: Item(items={default=ItemObject(name=default, id=default, displayName=<gray>default</gray>, lore=[], material=PAPER, color=[132, 324, 221], disableEnchanting=false, excludeFromInventory=false, unbreakable=false, itemFlags=[HIDE_DYE], potionEffects=[PotionEffect(type=CraftPotionEffectType[minecraft:regeneration], duration=1000, amplifier=1, ambient=false, showIcon=false, showParticles=false, probability=0.0)], attributeModifiers={LUCK=AttributeData(amount=0.1, operation=0, slot=HAND)}, enchantments={CraftEnchantment{holder=Reference{ResourceKey[minecraft:enchantment / minecraft:sharpness]=Enchantment Sharpness}}=1}, pack=PackObject(parentModel=, customModelData=CustomModelData(floats=[], colors=[], strings=[], flags=[]), model=, textures=[test], blockingModel=, pullingModel=, chargedModel=, fireWorkModel=, castModel=, damagedModel=), components=ItemComponent(maxStackSize=10, enchantmentGlintOverride=false, durability=100, hideTooltip=false, food=Food(nutrition=0, saturation=12, eatAlways=false), consumable=Consumable(sound=minecraft:block.amethyst_block.hit, consumeParticles=false, consumeSeconds=0.1, animation=, effect=Effects(applyEffects=[CraftPotionEffectType[minecraft:luck]], removeEffects=[CraftPotionEffectType[minecraft:regeneration]], clearAllEffects=[CraftPotionEffectType[minecraft:regeneration]], teleportRandomly=TeleportRandomly(diameter=0.0), playSound=PlaySound(sound=minecraft:block.amethyst_block.hit))), damageResistant=isfire, enchantable=1, glider=true, cooldown=Cooldown(cooldown=0.4), repairable=PAPER, equitable=Equippable(slot=HAND, model=, cameraOverlay=, equipSound=minecraft:block.amethyst_block.hit, allowedEntities=[PLAYER], dispensable=false, swappable=true, damageOnHurt=false), customModelData=CustomModelData(floats=[], colors=[], strings=[], flags=[])))})
+[00:31:20] [Server thread/INFO]: Loading default...
+[00:31:20] [Server thread/INFO]: Loaded 1 items
+[00:31:20] [Server thread/INFO]: [CrystalBench] Loaded CrystalBench Items: 1
+[00:31:20] [Server thread/INFO]: [CrystalBench] default=ItemObject(name=default, id=default, displayName=<gray>default</gray>, lore=[], material=PAPER, color=[132, 324, 221], disableEnchanting=false, excludeFromInventory=false, unbreakable=false, itemFlags=[HIDE_DYE], potionEffects=[PotionEffect(type=CraftPotionEffectType[minecraft:regeneration], duration=1000, amplifier=1, ambient=false, showIcon=false, showParticles=false, probability=0.0)], attributeModifiers={LUCK=AttributeData(amount=0.1, operation=0, slot=HAND)}, enchantments={CraftEnchantment{holder=Reference{ResourceKey[minecraft:enchantment / minecraft:sharpness]=Enchantment Sharpness}}=1}, pack=PackObject(parentModel=, customModelData=CustomModelData(floats=[], colors=[], strings=[], flags=[]), model=, textures=[test], blockingModel=, pullingModel=, chargedModel=, fireWorkModel=, castModel=, damagedModel=), components=ItemComponent(maxStackSize=10, enchantmentGlintOverride=false, durability=100, hideTooltip=false, food=Food(nutrition=0, saturation=12, eatAlways=false), consumable=Consumable(sound=minecraft:block.amethyst_block.hit, consumeParticles=false, consumeSeconds=0.1, animation=, effect=Effects(applyEffects=[CraftPotionEffectType[minecraft:luck]], removeEffects=[CraftPotionEffectType[minecraft:regeneration]], clearAllEffects=[CraftPotionEffectType[minecraft:regeneration]], teleportRandomly=TeleportRandomly(diameter=0.0), playSound=PlaySound(sound=minecraft:block.amethyst_block.hit))), damageResistant=isfire, enchantable=1, glider=true, cooldown=Cooldown(cooldown=0.4), repairable=PAPER, equitable=Equippable(slot=HAND, model=, cameraOverlay=, equipSound=minecraft:block.amethyst_block.hit, allowedEntities=[PLAYER], dispensable=false, swappable=true, damageOnHurt=false), customModelData=CustomModelData(floats=[], colors=[], strings=[], flags=[])))
+[00:31:20] [Server thread/INFO]: Preparing level "world"
+[00:31:21] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
+[00:31:21] [Server thread/INFO]: Preparing spawn area: 0%
+[00:31:21] [Server thread/INFO]: Preparing spawn area: 0%
+[00:31:21] [Server thread/INFO]: Time elapsed: 596 ms
+[00:31:21] [Server thread/INFO]: Preparing start region for dimension minecraft:the_nether
+[00:31:21] [Server thread/INFO]: Preparing spawn area: 0%
+[00:31:22] [Server thread/INFO]: Time elapsed: 49 ms
+[00:31:22] [Server thread/INFO]: Preparing start region for dimension minecraft:the_end
+[00:31:22] [Server thread/INFO]: Preparing spawn area: 0%
+[00:31:22] [Server thread/INFO]: Time elapsed: 41 ms
+[00:31:22] [Server thread/INFO]: [spark] Starting background profiler...
+[00:31:22] [Server thread/INFO]: [spark] The async-profiler engine is not supported for your os/arch (windows11/amd64), so the built-in Java engine will be used instead.
+[00:31:22] [Server thread/INFO]: Done preparing level "world" (1.310s)
+[00:31:22] [Server thread/INFO]: Running delayed init tasks
+[00:31:22] [Server thread/INFO]: [CommandAPI] Reloading datapacks...
+[00:31:22] [Server thread/INFO]: Loaded 1370 recipes
+[00:31:22] [Server thread/INFO]: Loaded 1481 advancements
+[00:31:22] [Server thread/INFO]: [CommandAPI] Finished reloading datapacks
+[00:31:22] [Server thread/INFO]: Done (10.114s)! For help, type "help"

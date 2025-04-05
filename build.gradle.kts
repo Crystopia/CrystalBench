@@ -1,8 +1,10 @@
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+
 plugins {
     kotlin("jvm") version "2.0.20-Beta1"
     id("com.gradleup.shadow") version "9.0.0-beta8"
     id("xyz.jpenilla.run-paper") version "2.3.1"
-    id("de.eldoria.plugin-yml.bukkit") version "0.7.0"
+    id("de.eldoria.plugin-yml.paper") version "0.7.0"
     kotlin("plugin.serialization") version "2.1.0"
 }
 
@@ -42,15 +44,27 @@ dependencies {
     compileOnly("dev.jorel:commandapi-bukkit-core:${commandAPIVersion}")
     implementation("dev.jorel:commandapi-bukkit-shade-mojang-mapped:${commandAPIVersion}")
     implementation("dev.jorel:commandapi-bukkit-kotlin:${commandAPIVersion}")
+
+    // Creative
+    implementation("team.unnamed:creative-api:1.7.3")
+    // Serializer for Minecraft format (ZIP / Folder)
+    implementation("team.unnamed:creative-serializer-minecraft:1.7.3")
+    // Resource Pack server
+    implementation("team.unnamed:creative-server:1.7.3")
 }
 
 kotlin {
     jvmToolchain(21)
 }
 
+tasks.shadowJar {
+    manifest {
+        attributes["paperweight-mappings-namespace"] = "mojang"
+    }
+}
+
 tasks.build {
     dependsOn(tasks.shadowJar)
-    dependsOn(tasks.reobfJar)
 }
 
 tasks {
@@ -65,5 +79,6 @@ paper {
     description = projectDescription
     main = mainClass
     authors = listOf("xyzjesper")
-    apiVersion = "1.19"
+    apiVersion = "1.21"
+    load = BukkitPluginDescription.PluginLoadOrder.STARTUP
 }

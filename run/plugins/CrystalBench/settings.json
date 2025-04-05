@@ -1,0 +1,22 @@
+{
+    "Pack": {
+        "type": "SELFHOST",
+        "host": "0.0.0.0",
+        "port": 8000,
+        "path": "plugins/CrystalBench/out",
+        "descrption": ""
+    },
+    "dispatch": {
+        "sendOnReload": true,
+        "sendOnJoin": true,
+        "sendOnPreJoin": true,
+        "promt": "Use the Custom Resourcepack"
+    },
+    "handleStatus": {
+        "ACCEPTED": {
+            "message": "Thanks for accepting",
+            "kick": false,
+            "sendToServer": null
+        }
+    }
+}
