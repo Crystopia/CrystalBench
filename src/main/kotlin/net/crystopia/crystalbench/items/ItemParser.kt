@@ -227,8 +227,9 @@ class ItemParser(private val itemObject: ItemObject) {
 
         // DamageResistant
         if (itemObject.components?.damageResistant != null) {
-            val damageResistant = itemObject.components?.damageResistant as DamageResistant
-            //meta.setDamageResistant()
+            val damageResistant: DamageResistant = itemObject.components!!.damageResistant as DamageResistant
+            val damageTypeTag = Tag<DamageType>(damageResistant)
+            meta.setDamageResistant(damageTypeTag)
         }
 
 
