@@ -1,12 +1,16 @@
 ﻿package net.crystopia.crystalbench.config
 
+import io.papermc.paper.registry.keys.EnchantmentKeys
 import net.crystopia.crystalbench.config.models.*
+import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
+import org.bukkit.damage.DamageType
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.potion.PotionEffectType
 import java.io.File
@@ -51,7 +55,7 @@ object LoadDefaultData {
                 pack = PackObject(
                     customModelData = CustomModelData(
                         flags = mutableListOf(),
-                        colors = mutableListOf(),
+                        //colors = mutableListOf(),
                         floats = mutableListOf(),
                         strings = mutableListOf(),
                     ),
@@ -66,13 +70,17 @@ object LoadDefaultData {
                     textures = mutableListOf("test"),
                 ),
                 attributeModifiers = mutableMapOf(
-                    Attribute.LUCK.toString() to AttributeData(
-                        operation = 0, slot = EquipmentSlot.HAND, amount = 0.1
+                    Attribute.LUCK to AttributeData(
+                        operation = 0, slot = EquipmentSlotGroup.HAND, amount = 0.1
+                    ), Attribute.ATTACK_DAMAGE to AttributeData(
+                        operation = 0, slot = EquipmentSlotGroup.MAINHAND, amount = 1000.0
+                    ), Attribute.ATTACK_SPEED to AttributeData(
+                        operation = 0, slot = EquipmentSlotGroup.MAINHAND, amount = 10.0
                     )
                 ),
                 displayName = "<gray>default</gray>",
-                material = Material.PAPER,
-                color = mutableListOf(132, 324, 221),
+                material = Material.STONE_SWORD,
+                color = mutableListOf(255, 133, 89),
                 disableEnchanting = false,
                 unbreakable = false,
                 potionEffects = mutableListOf(
@@ -87,17 +95,11 @@ object LoadDefaultData {
                     )
                 ),
                 enchantments = mutableMapOf(
-                    Enchantment.SHARPNESS to 1
+                    "SHARPNESS" to 1
                 ),
                 components = ItemComponent(
-                    customModelData = CustomModelData(
-                        flags = mutableListOf(),
-                        colors = mutableListOf(),
-                        floats = mutableListOf(),
-                        strings = mutableListOf(),
-                    ),
                     food = Food(
-                        eatAlways = false, nutrition = 0, saturation = 12
+                        eatAlways = true, nutrition = 300, saturation = 120F
                     ),
                     equitable = Equippable(
                         slot = EquipmentSlot.HAND,
@@ -128,15 +130,15 @@ object LoadDefaultData {
                         ),
                         consumeSeconds = 0.1
                     ),
-                    durability = 100,
-                    repairable = Material.PAPER,
+                    durability = 5,
+                    repairable = Material.APPLE,
                     enchantable = 1,
                     hideTooltip = false,
                     glider = true,
                     cooldown = Cooldown(
                         cooldown = 0.4,
                     ),
-                    damageResistant = "isfire"
+                    damageResistant = "LAVA"
                 )
             )
         )

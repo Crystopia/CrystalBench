@@ -1,14 +1,13 @@
 ﻿package net.crystopia.crystalbench.config.models
 
+import DamageTypeSerializer
 import PotionEffectTypeSerializer
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
-import org.bukkit.Sound
-import org.bukkit.entity.Entity
+import org.bukkit.damage.DamageType
 import org.bukkit.entity.EntityType
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.PotionEffectType
-import kotlin.contracts.Effect
 
 @Serializable
 data class ItemComponent(
@@ -19,18 +18,19 @@ data class ItemComponent(
     var food: Food? = null,
     var consumable: Consumable? = null,
     var damageResistant: String? = null,
+    // TODO
     var enchantable: Int? = null,
     var glider: Boolean? = null,
     var cooldown: Cooldown? = null,
     var repairable: Material? = null,
     var equitable: Equippable? = null,
-    var customModelData: CustomModelData? = null,
 )
 
 @Serializable
 data class CustomModelData(
     var floats: MutableList<Float>? = null,
-    var colors: MutableList<Int>? = null,
+    // SOON
+    //  var colors: MutableList<Int>? = null,
     var strings: MutableList<String>? = null,
     var flags: MutableList<Boolean>? = null,
 )
@@ -55,7 +55,7 @@ data class Cooldown(
 @Serializable
 data class Food(
     var nutrition: Int? = null,
-    var saturation: Int? = null,
+    var saturation: Float? = null,
     var eatAlways: Boolean? = null,
 )
 

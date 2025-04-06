@@ -43,3 +43,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+/run
+/run/world_the_end
+/run

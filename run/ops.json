@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "uuid": "d52e14ce-5bce-4359-8764-399674a3d2aa",
+    "name": "jesforge",
+    "level": 4,
+    "bypassesPlayerLimit": false
+  }
+]

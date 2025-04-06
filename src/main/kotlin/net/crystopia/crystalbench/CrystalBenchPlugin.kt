@@ -8,6 +8,7 @@ import net.crystopia.crystalbench.commands.CrystalBenchCommand
 import net.crystopia.crystalbench.config.ConfigManager
 import net.crystopia.crystalbench.config.LoadDefaultData
 import org.bukkit.Bukkit
+import org.bukkit.NamespacedKey
 import org.bukkit.plugin.java.JavaPlugin
 
 class CrystalBenchPlugin : JavaPlugin() {
@@ -27,7 +28,7 @@ class CrystalBenchPlugin : JavaPlugin() {
         Log.info("Load Folder Structure")
         LoadDefaultData.loadStructure()
         ConfigManager.settings
-
+        CrystalItems.loadItems()
 
     }
 
@@ -44,11 +45,9 @@ class CrystalBenchPlugin : JavaPlugin() {
         """.trimIndent()
         )
 
-
         Log.info("Loaded CrystalBench Items: ${CrystalItems.itemCount()}")
-        CrystalItems.items().forEach {
-           logger.info(it.toString())
-        }
+
+
 
     }
 

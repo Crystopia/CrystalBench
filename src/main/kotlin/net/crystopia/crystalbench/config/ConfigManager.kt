@@ -1,5 +1,6 @@
 package net.crystopia.crystalbench.config
 
+import Log
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.crystopia.crystalbench.config.models.Item
@@ -28,24 +29,17 @@ object ConfigManager {
         if (configDirectory.exists() && configDirectory.isDirectory) {
             configDirectory.walkTopDown().filter { it.isFile && it.extension == "json" }.forEach { jsonFile ->
                 try {
-                    println("Loading: ${jsonFile.name}")
-
                     val jsonContent = jsonFile.readText()
 
                     val configItem = json.decodeFromString<Item>(jsonContent)
-                    println(configItem)
                     configItem.items.forEach { (key, item) ->
                         configs[key] = item
                     }
                 } catch (e: Exception) {
-                    println("Failed to load config from ${jsonFile.name}: ${e.message}")
+                    Log.error("Failed to load config from ${jsonFile.name}: ${e.message}!")
                 }
             }
         }
-        configs.values.forEach { config ->
-            println("Loading ${config.name}...")
-        }
-        println("Loaded ${configs.size} items")
         return configs
     }
 
@@ -61,7 +55,6 @@ object ConfigManager {
         )
         jsonFile.writeText(jsonContent)
     }
-
 
 
     fun reload() {
