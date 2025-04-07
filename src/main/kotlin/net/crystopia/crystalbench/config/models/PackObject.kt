@@ -14,4 +14,5 @@ data class PackObject(
     var fireWorkModel: String? = null,
     var castModel: String? = null,
     var damagedModel: String? = null,
+    var itemModel: String? = null,
 )

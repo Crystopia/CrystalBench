@@ -1,12 +1,14 @@
 ﻿package net.crystopia.crystalbench.items
 
-import com.google.gson.Gson
+import io.papermc.paper.datacomponent.DataComponentBuilder
+import io.papermc.paper.datacomponent.DataComponentType
+import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.DamageResistant
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.tag.TagKey
 import net.crystopia.crystalbench.CrystalBenchPlugin
-import net.crystopia.crystalbench.config.models.CustomModelData
+import net.crystopia.crystalbench.config.models.Cooldown
 import net.crystopia.crystalbench.config.models.ItemObject
 import net.crystopia.crystalbench.utils.StringListPersistentDataType
 import net.kyori.adventure.key.Key
@@ -15,27 +17,17 @@ import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.Registry
-import org.bukkit.Server
 import org.bukkit.Sound
-import org.bukkit.Statistic.Type
-import org.bukkit.Tag
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.damage.DamageType
-import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.Damageable
-import org.bukkit.entity.EntityType
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.inventory.meta.PotionMeta
-import org.bukkit.inventory.meta.components.CustomModelDataComponent
-import org.bukkit.inventory.meta.components.FoodComponent
-import org.bukkit.persistence.ListPersistentDataType
-import org.bukkit.persistence.PersistentDataContainer
+import org.bukkit.inventory.meta.components.EquippableComponent
+import org.bukkit.inventory.meta.components.UseCooldownComponent
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.potion.PotionEffect
-import org.checkerframework.checker.signature.qual.Identifier
+import org.bukkit.tag.DamageTypeTags
 import java.lang.reflect.GenericDeclaration
 import java.lang.reflect.TypeVariable
 
@@ -161,6 +153,17 @@ class ItemParser(private val itemObject: ItemObject) {
             foodComp.setCanAlwaysEat(foodComponent.eatAlways ?: false)
             meta.setFood(foodComp)
         }
+        // Glider
+        meta.isGlider = itemObject.components!!.glider != null
+        // Repairable
+        meta.persistentDataContainer.set(
+            NamespacedKey(
+                CrystalBenchPlugin.instance,
+                "repairable",
+
+                ), PersistentDataType.STRING, itemObject.components!!.repairable.toString()
+        )
+
         // Consumable
         if (itemObject.components?.consumable != null) {
             val consume = itemObject.components?.consumable!!
@@ -226,14 +229,47 @@ class ItemParser(private val itemObject: ItemObject) {
         }
 
         // DamageResistant
-        if (itemObject.components?.damageResistant != null) {
-            val damageResistant: DamageResistant = itemObject.components!!.damageResistant as DamageResistant
-            //val damageTypeTag = Tag<DamageType>(damageResistant)
-            // meta.setDamageResistant(damageTypeTag)
+        itemObject.components?.damageResistant?.let { damageKeyString ->
+            meta.setDamageResistant(
+                Bukkit.getTag(
+                    DamageTypeTags.REGISTRY_DAMAGE_TYPES,
+                    NamespacedKey.fromString(itemObject.components?.damageResistant!!)!!,
+                    DamageType::class.java
+                )
+            )
         }
 
+        // Enchantable
+        itemObject.components!!.enchantable.let { enchantable ->
+            meta.setEnchantable(itemObject.components!!.enchantable)
+        }
 
-        //CustomModelData
+        // Cooldown
+        itemObject.components!!.cooldown.let { cooldown ->
+            if (meta is UseCooldownComponent) {
+                meta.cooldownSeconds = itemObject.components!!.cooldown!!.cooldown.toFloat()
+                meta.cooldownGroup = NamespacedKey.fromString(itemObject.components!!.cooldown!!.group!!)
+            }
+        }
+
+        // Equitable
+        itemObject.components?.equippable?.let { equippable ->
+            if (meta is EquippableComponent) {
+                val comp: EquippableComponent = meta
+                equippable.slot?.let { comp.slot = it }
+                equippable.model?.let { comp.model = NamespacedKey.fromString(it) }
+                equippable.cameraOverlay?.let { comp.cameraOverlay = NamespacedKey.fromString(it) }
+                (equippable.equipSound as? Sound)?.let { comp.setEquipSound(it) }
+                comp.allowedEntities = equippable.allowedEntities
+                comp.isDispensable = equippable.dispensable
+                comp.isSwappable = equippable.swappable
+                comp.isDamageOnHurt = equippable.damageOnHurt
+
+                meta.setEquippable(comp)
+            }
+        }
+
+        // CustomModelData
         if (itemObject.pack!!.customModelData != null) {
             meta.customModelDataComponent.floats = itemObject.pack!!.customModelData.floats!!
             meta.customModelDataComponent.strings = itemObject.pack!!.customModelData.strings!!
@@ -241,9 +277,10 @@ class ItemParser(private val itemObject: ItemObject) {
             //    meta.customModelDataComponent.colors = itemObject.pack!!.customModelData.colors!!
         }
 
-        // ItemMode - SOON
-        // meta.itemModel = NamespacedKey(CrystalBenchPlugin.instance, "item")
-
+        // ItemMode
+        if (itemObject.pack!!.itemModel != null) {
+            meta.itemModel = NamespacedKey.fromString(itemObject.pack!!.itemModel!!)
+        }
         item.itemMeta = meta
 
         // Amount

@@ -101,8 +101,8 @@ object LoadDefaultData {
                     food = Food(
                         eatAlways = true, nutrition = 300, saturation = 120F
                     ),
-                    equitable = Equippable(
-                        slot = EquipmentSlot.HAND,
+                    equippable = Equippable(
+                        slot = EquipmentSlot.HEAD,
                         swappable = true,
                         damageOnHurt = false,
                         model = "",
@@ -138,7 +138,7 @@ object LoadDefaultData {
                     cooldown = Cooldown(
                         cooldown = 0.4,
                     ),
-                    damageResistant = "LAVA"
+                    damageResistant = "is_fire"
                 )
             )
         )

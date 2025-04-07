@@ -4,10 +4,12 @@ import DamageTypeSerializer
 import PotionEffectTypeSerializer
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.EntityType
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.PotionEffectType
+import org.bukkit.tag.DamageTypeTags
 
 @Serializable
 data class ItemComponent(
@@ -17,13 +19,14 @@ data class ItemComponent(
     var hideTooltip: Boolean? = null,
     var food: Food? = null,
     var consumable: Consumable? = null,
+    // NEED Test
     var damageResistant: String? = null,
-    // TODO
+    // NEED Test
     var enchantable: Int? = null,
     var glider: Boolean? = null,
-    var cooldown: Cooldown? = null,
     var repairable: Material? = null,
-    var equitable: Equippable? = null,
+    var cooldown: Cooldown? = null,
+    var equippable: Equippable? = null,
 )
 
 @Serializable
@@ -37,7 +40,7 @@ data class CustomModelData(
 
 @Serializable
 data class Equippable(
-    val slot: EquipmentSlot? = null,
+    var slot: EquipmentSlot? = null,
     val model: String? = null,
     val cameraOverlay: String? = null,
     val equipSound: String? = null,
@@ -49,7 +52,7 @@ data class Equippable(
 
 @Serializable
 data class Cooldown(
-    var cooldown: Double,
+    var cooldown: Double, var group: String? = null,
 )
 
 @Serializable

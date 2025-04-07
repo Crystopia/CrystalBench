@@ -27,12 +27,16 @@ repositories {
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
     maven("https://repo.flyte.gg/releases")
+    maven("https://repo.nexomc.com/releases")
 }
 
 dependencies {
     // Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+
+    //implementation("com.nexomc:nexo:1.3.0")
 
     // Paper
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
