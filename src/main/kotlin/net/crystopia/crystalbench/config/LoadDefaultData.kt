@@ -1,13 +1,9 @@
 ﻿package net.crystopia.crystalbench.config
 
-import io.papermc.paper.registry.keys.EnchantmentKeys
 import net.crystopia.crystalbench.config.models.*
-import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
-import org.bukkit.damage.DamageType
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.EquipmentSlotGroup
@@ -56,7 +52,7 @@ object LoadDefaultData {
                     customModelData = CustomModelData(
                         flags = mutableListOf(),
                         //colors = mutableListOf(),
-                        floats = mutableListOf(),
+                        floats = mutableListOf(10000F),
                         strings = mutableListOf(),
                     ),
                     model = "",
@@ -68,6 +64,7 @@ object LoadDefaultData {
                     fireWorkModel = "",
                     parentModel = "",
                     textures = mutableListOf("test"),
+                    // itemModel = "minecraft:player_head"
                 ),
                 attributeModifiers = mutableMapOf(
                     Attribute.LUCK to AttributeData(
@@ -79,7 +76,7 @@ object LoadDefaultData {
                     )
                 ),
                 displayName = "<gray>default</gray>",
-                material = Material.STONE_SWORD,
+                material = Material.PLAYER_HEAD,
                 color = mutableListOf(255, 133, 89),
                 disableEnchanting = false,
                 unbreakable = false,
@@ -98,16 +95,21 @@ object LoadDefaultData {
                     "SHARPNESS" to 1
                 ),
                 components = ItemComponent(
+                    customData = mutableListOf(
+                        CustomData(
+                            namespace = "test:test", stringData = "sadfd", type = "string"
+                        )
+                    ),
                     food = Food(
                         eatAlways = true, nutrition = 300, saturation = 120F
                     ),
-                    equippable = Equippable(
+                    equitable = Equippable(
                         slot = EquipmentSlot.HEAD,
                         swappable = true,
                         damageOnHurt = false,
-                        model = "",
+                        model = "minecraft:test",
                         cameraOverlay = "",
-                        equipSound = "minecraft:block.amethyst_block.hit",
+                        equipSound = Sound.ENTITY_HORSE_ANGRY,
                         dispensable = false,
                         allowedEntities = listOf(EntityType.PLAYER)
                     ),
@@ -133,7 +135,7 @@ object LoadDefaultData {
                     durability = 5,
                     repairable = Material.APPLE,
                     enchantable = 1,
-                    hideTooltip = false,
+                    hideTooltip = true,
                     glider = true,
                     cooldown = Cooldown(
                         cooldown = 0.4,

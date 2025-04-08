@@ -1,35 +1,28 @@
 ﻿package net.crystopia.crystalbench.items
 
-import io.papermc.paper.datacomponent.DataComponentBuilder
-import io.papermc.paper.datacomponent.DataComponentType
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.DamageResistant
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
-import io.papermc.paper.registry.tag.TagKey
 import net.crystopia.crystalbench.CrystalBenchPlugin
-import net.crystopia.crystalbench.config.models.Cooldown
+import net.crystopia.crystalbench.config.models.CustomData
 import net.crystopia.crystalbench.config.models.ItemObject
 import net.crystopia.crystalbench.utils.StringListPersistentDataType
-import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.Sound
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.damage.DamageType
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.inventory.meta.PotionMeta
+import org.bukkit.inventory.meta.components.CustomModelDataComponent
 import org.bukkit.inventory.meta.components.EquippableComponent
 import org.bukkit.inventory.meta.components.UseCooldownComponent
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.tag.DamageTypeTags
-import java.lang.reflect.GenericDeclaration
-import java.lang.reflect.TypeVariable
 
 class ItemParser(private val itemObject: ItemObject) {
     private val mm = MiniMessage.miniMessage()
@@ -253,34 +246,43 @@ class ItemParser(private val itemObject: ItemObject) {
         }
 
         // Equitable
-        itemObject.components?.equippable?.let { equippable ->
-            if (meta is EquippableComponent) {
-                val comp: EquippableComponent = meta
-                equippable.slot?.let { comp.slot = it }
-                equippable.model?.let { comp.model = NamespacedKey.fromString(it) }
-                equippable.cameraOverlay?.let { comp.cameraOverlay = NamespacedKey.fromString(it) }
-                (equippable.equipSound as? Sound)?.let { comp.setEquipSound(it) }
-                comp.allowedEntities = equippable.allowedEntities
-                comp.isDispensable = equippable.dispensable
-                comp.isSwappable = equippable.swappable
-                comp.isDamageOnHurt = equippable.damageOnHurt
+        itemObject.components?.equitable?.let { equippable ->
 
-                meta.setEquippable(comp)
-            }
+            val equippableComponent: EquippableComponent = item.itemMeta.equippable
+
+            equippableComponent.setSlot(equippable.slot!!)
+            equippableComponent.setModel(NamespacedKey.fromString(equippable.model!!))
+            equippableComponent.setCameraOverlay(NamespacedKey.fromString(equippable.cameraOverlay!!))
+            equippableComponent.setEquipSound(equippable.equipSound)
+            equippableComponent.setAllowedEntities(equippable.allowedEntities)
+            equippableComponent.setDispensable(equippable.dispensable)
+            equippableComponent.setSwappable(equippable.swappable)
+            equippableComponent.setDamageOnHurt(equippable.damageOnHurt)
+            meta.setEquippable(equippableComponent)
         }
 
         // CustomModelData
         if (itemObject.pack!!.customModelData != null) {
-            meta.customModelDataComponent.floats = itemObject.pack!!.customModelData.floats!!
-            meta.customModelDataComponent.strings = itemObject.pack!!.customModelData.strings!!
-            meta.customModelDataComponent.flags = itemObject.pack!!.customModelData.flags!!
+            val modelDataComponent: CustomModelDataComponent = item.itemMeta.customModelDataComponent
+            modelDataComponent.setFloats(itemObject.pack!!.customModelData.floats!!)
+            modelDataComponent.setStrings(itemObject.pack!!.customModelData.strings!!)
+            modelDataComponent.setFlags(itemObject.pack!!.customModelData.flags!!)
+            meta.setCustomModelDataComponent(modelDataComponent)
             //    meta.customModelDataComponent.colors = itemObject.pack!!.customModelData.colors!!
         }
 
-        // ItemMode
+        // ItemModel
         if (itemObject.pack!!.itemModel != null) {
             meta.itemModel = NamespacedKey.fromString(itemObject.pack!!.itemModel!!)
         }
+
+        // CustomData
+        if (itemObject.components!!.customData != null) {
+            itemObject.components?.customData?.let {
+                applyCustomDataToMeta(meta, it)
+            }
+        }
+
         item.itemMeta = meta
 
         // Amount
@@ -288,4 +290,25 @@ class ItemParser(private val itemObject: ItemObject) {
 
         return item
     }
+
+    private fun applyCustomDataToMeta(meta: ItemMeta, dataList: List<CustomData>) {
+        val container = meta.persistentDataContainer
+
+        dataList.forEach { data ->
+            val key = NamespacedKey.fromString(data.namespace) ?: return@forEach
+
+            when (data.type.lowercase()) {
+                "string" -> container.set(key, PersistentDataType.STRING, data.stringData!!)
+                "int" -> container.set(key, PersistentDataType.INTEGER, data.intData!!)
+                "double" -> container.set(key, PersistentDataType.DOUBLE, data.doubleData!!)
+                "float" -> container.set(key, PersistentDataType.FLOAT, data.floatData!!)
+                "long" -> container.set(key, PersistentDataType.LONG, data.longData!!)
+                else -> {
+                    println("Unknown PersistentDataType: ${data.type}")
+                }
+            }
+        }
+    }
+
+
 }

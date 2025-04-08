@@ -1,15 +1,13 @@
 ﻿package net.crystopia.crystalbench.config.models
 
-import DamageTypeSerializer
 import PotionEffectTypeSerializer
 import kotlinx.serialization.Serializable
+import net.crystopia.crystalbench.utils.SoundSerializer
 import org.bukkit.Material
 import org.bukkit.Sound
-import org.bukkit.damage.DamageType
 import org.bukkit.entity.EntityType
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.PotionEffectType
-import org.bukkit.tag.DamageTypeTags
 
 @Serializable
 data class ItemComponent(
@@ -18,15 +16,28 @@ data class ItemComponent(
     var durability: Int? = null,
     var hideTooltip: Boolean? = null,
     var food: Food? = null,
+    // Need event
     var consumable: Consumable? = null,
-    // NEED Test
     var damageResistant: String? = null,
     // NEED Test
     var enchantable: Int? = null,
     var glider: Boolean? = null,
+    // Need event
     var repairable: Material? = null,
     var cooldown: Cooldown? = null,
-    var equippable: Equippable? = null,
+    var equitable: Equippable? = null,
+    var customData: MutableList<CustomData>? = null,
+)
+
+@Serializable
+data class CustomData(
+    var namespace: String,
+    var type: String,
+    var stringData: String? = null,
+    var intData: Int? = null,
+    var doubleData: Double? = null,
+    var floatData: Float? = null,
+    var longData: Long? = null,
 )
 
 @Serializable
@@ -43,7 +54,7 @@ data class Equippable(
     var slot: EquipmentSlot? = null,
     val model: String? = null,
     val cameraOverlay: String? = null,
-    val equipSound: String? = null,
+    val equipSound: @Serializable(with = SoundSerializer::class) Sound? = null,
     val allowedEntities: List<EntityType>? = null,
     val dispensable: Boolean = true,
     val swappable: Boolean = true,
