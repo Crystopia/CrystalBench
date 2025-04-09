@@ -13,7 +13,7 @@ class GiveItemCommand : CommandExecutor {
     override fun run(p0: CommandSender?, p1: CommandArguments?) {
         val mm = MiniMessage.miniMessage()
         p0 as Player
-        val item = CrystalItems.getItemById(p1?.get(0)!!.toString())
+        val item = CrystalItems.getItemObjectById(p1?.get(0)!!.toString())
         p0.give(item!!)
         val displayName = item.itemMeta?.displayName()?.let {
             Component.text().append(it).colorIfAbsent(NamedTextColor.WHITE)

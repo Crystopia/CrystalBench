@@ -62,9 +62,10 @@ object LoadDefaultData {
                     pullingModel = "",
                     blockingModel = "",
                     fireWorkModel = "",
+                    itemModel = "minecraft:player_head",
                     parentModel = "",
-                    textures = mutableListOf("test"),
-                    // itemModel = "minecraft:player_head"
+                    textures = mutableListOf(),
+                    namespace = "minecraft",
                 ),
                 attributeModifiers = mutableMapOf(
                     Attribute.LUCK to AttributeData(

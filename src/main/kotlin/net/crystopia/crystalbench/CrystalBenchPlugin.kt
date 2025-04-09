@@ -3,6 +3,7 @@
 import Log
 import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPIBukkitConfig
+import gg.flyte.twilight.twilight
 import net.crystopia.crystalbench.api.CrystalItems
 import net.crystopia.crystalbench.commands.CrystalBenchCommand
 import net.crystopia.crystalbench.config.ConfigManager
@@ -35,6 +36,9 @@ class CrystalBenchPlugin : JavaPlugin() {
     override fun onEnable() {
         CommandAPI.onEnable()
 
+        // Twilight
+        val twilight = twilight(this)
+
         // Commands
         CrystalBenchCommand
 
@@ -46,7 +50,6 @@ class CrystalBenchPlugin : JavaPlugin() {
         )
 
         Log.info("Loaded CrystalBench Items: ${CrystalItems.itemCount()}")
-
 
 
     }

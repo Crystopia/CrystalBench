@@ -15,4 +15,5 @@ data class PackObject(
     var castModel: String? = null,
     var damagedModel: String? = null,
     var itemModel: String? = null,
+    var namespace: String? = "minecraft",
 )
