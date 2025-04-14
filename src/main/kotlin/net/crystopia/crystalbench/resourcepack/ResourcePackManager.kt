@@ -2,33 +2,30 @@
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import gg.flyte.twilight.gson.toJson
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import net.crystopia.crystalbench.CrystalBenchPlugin
 import net.crystopia.crystalbench.api.CrystalItems
 import net.crystopia.crystalbench.config.ConfigManager
+import net.crystopia.crystalbench.config.models.CustomModelData
 import net.crystopia.crystalbench.config.models.PackObject
-import net.crystopia.crystalbench.utils.ResourcePackVersion
 import org.bukkit.Material
 import org.bukkit.Tag
-import org.bukkit.inventory.meta.*
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-import kotlin.math.min
 
 object ResourcePackManager {
 
     private val logger = CrystalBenchPlugin.instance.logger
     private val outputZip = Path.of("plugins/CrystalBench/out/pack.zip")
-    private val externalPackFolder = File("plugins/CrystalBench/pack/external_packs")
-    private val packPNG = File("plugins/CrystalBench/pack/pack.png")
-    private val packVersion: Int =
-        ResourcePackVersion.getPackFormat(CrystalBenchPlugin.instance.server.minecraftVersion)
+    private val packFolder = File("plugins/CrystalBench/pack")
+    private val assetsFolder = File(packFolder, "assets")
+    private val externalPackFolder = File(packFolder, "external_packs")
+    private val packPNG = File(packFolder, "pack.png")
     private val packDescription = ConfigManager.settings.Pack.descrption
 
     private val json = Json {
@@ -47,10 +44,10 @@ object ResourcePackManager {
         // Create a map to hold all pack files with their paths
         val packFiles = mutableMapOf<String, ByteArray>()
 
-        // Add pack.mcmeta
+        // Add pack.mcmeta (format 22 for 1.21.4)
         val packMeta = buildJsonObject {
             putJsonObject("pack") {
-                put("pack_format", JsonPrimitive(22)) // Pack format for 1.21.4
+                put("pack_format", JsonPrimitive(22))
                 put("description", JsonPrimitive(packDescription))
             }
         }.toString()
@@ -61,24 +58,48 @@ object ResourcePackManager {
             packFiles["pack.png"] = packPNG.readBytes()
         }
 
-        // Process external packs
-        if (externalPackFolder.exists()) {
-            externalPackFolder.listFiles()?.filter { it.isDirectory }?.forEach { dir ->
-                logger.info("Merging external pack: ${dir.name}")
-                val externalPackPath = dir.toPath()
+        // Process main pack assets
+        if (assetsFolder.exists()) {
+            Files.walk(assetsFolder.toPath()).forEach { path ->
+                val file = path.toFile()
+                if (file.isFile) {
+                    val relative = packFolder.toPath().relativize(path).toString().replace("\\", "/")
+                    packFiles[relative] = file.readBytes()
+                    logger.fine("Added pack file: $relative")
+                }
+            }
+        }
 
-                Files.walk(externalPackPath).forEach { path ->
-                    val file = path.toFile()
-                    if (file.isFile) {
-                        val relative = externalPackPath.relativize(path).toString().replace("\\", "/")
-                        packFiles[relative] = file.readBytes()
-                        logger.fine("Added external file: $relative")
+        // Process external packs and merge them into assets
+        if (externalPackFolder.exists()) {
+            externalPackFolder.listFiles()?.filter { it.isDirectory }?.forEach { externalPack ->
+                logger.info("Merging external pack: ${externalPack.name}")
+
+                // Process assets folder of external pack
+                val externalAssets = File(externalPack, "assets")
+                if (externalAssets.exists()) {
+                    Files.walk(externalAssets.toPath()).forEach { path ->
+                        val file = path.toFile()
+                        if (file.isFile) {
+                            val relative =
+                                "assets/" + externalAssets.toPath().relativize(path).toString().replace("\\", "/")
+                            packFiles[relative] = file.readBytes()
+                            logger.fine("Added external asset: $relative")
+                        }
+                    }
+                }
+
+                // Process other files from root of external pack
+                externalPack.listFiles()?.filter { it.isFile && it.name != "assets" }?.forEach { file ->
+                    if (file.name != "pack.mcmeta") {
+                        packFiles[file.name] = file.readBytes()
+                        logger.fine("Added external file: ${file.name}")
                     }
                 }
             }
         }
 
-        // Add custom item models
+        // Add custom item models from CrystalItems
         CrystalItems.items().forEach { (id, itemObj) ->
             val pack: PackObject = itemObj.pack ?: return@forEach
             val namespace = pack.namespace ?: "minecraft"
@@ -92,7 +113,7 @@ object ResourcePackManager {
             logger.info("Added custom item model: $modelPath")
 
             // Generate additional models if specified
-            generateAdditionalModels(itemMaterial!!, pack, namespace, itemName, packFiles)
+            generateAdditionalModels(itemMaterial, pack, namespace, itemName, packFiles)
         }
 
         // Write all files to zip
@@ -105,114 +126,116 @@ object ResourcePackManager {
             }
         }
 
-        logger.info("Resource pack written to: ${outputZip.toAbsolutePath()}")
+        logger.info("Successfully built 1.21.4 resource pack at: ${outputZip.toAbsolutePath()}")
     }
 
     private fun buildItemModelJson(
         itemMaterial: Material, pack: PackObject, namespace: String, itemName: String
     ): String {
         val modelJsonElement = buildJsonObject {
+            // Parent Model
             put("parent", JsonPrimitive(pack.parentModel ?: getParentModel(itemMaterial)))
 
-            // Handle textures
+            // Textures
             pack.textures?.takeIf { it.isNotEmpty() }?.let { textures ->
                 putJsonObject("textures") {
                     if (shouldUseLayers(itemMaterial, pack)) {
                         textures.forEachIndexed { index, texture ->
-                            put("layer$index", JsonPrimitive(texture))
+                            val (textureNamespace, texturePath) = parseNamespacePath(texture, namespace)
+                            put("layer$index", JsonPrimitive("$textureNamespace:$texturePath"))
                         }
                     } else {
-                        handleSpecialTextures(itemMaterial, pack, this)
+                        handleSpecialTextures(itemMaterial, pack, this, namespace)
                     }
                 }
             }
 
-            // Handle custom model data overrides
-            put("overrides", buildJsonArray {
-                // Function to add model with predicates
-                fun addModel(path: String?, vararg predicates: Pair<String, Any>) {
-                    if (!path.isNullOrBlank()) {
-                        add(buildJsonObject {
-                            putJsonObject("predicate") {
-                                predicates.forEach { (k, v) ->
-                                    when (v) {
-                                        is Number -> put(k, JsonPrimitive(v))
-                                        is Boolean -> put(k, JsonPrimitive(v))
-                                        is String -> put(k, JsonPrimitive(v))
-                                        is List<*> -> {
-                                            val jsonArray = JsonArray()
-                                            when {
-                                                v.all { it is Float } -> (v as List<Float>).forEach { jsonArray.add(it) }
-                                                v.all { it is Boolean } -> (v as List<Boolean>).forEach {
-                                                    jsonArray.add(
-                                                        it
-                                                    )
-                                                }
-
-                                                v.all { it is String } -> (v as List<String>).forEach { jsonArray.add(it) }
-                                                else -> error("Unsupported list type for predicate: $k")
-                                            }
-                                            put(k, jsonArray.toJson())
-                                        }
-
-                                        else -> error("Unsupported type for predicate: ${v::class}")
-                                    }
-                                }
-                            }
-                            put("model", JsonPrimitive(path))
-                        })
-                    }
-                }
-
-                // Handle float values
-                pack.customModelData.floats?.forEach { floatValue ->
-                    addModel(pack.model, "custom_model_data" to floatValue)
-                    pack.blockingModel?.let { addModel(it, "custom_model_data" to floatValue, "blocking" to 1.0) }
-                    pack.pullingModel?.let { addModel(it, "custom_model_data" to floatValue, "pulling" to 1.0) }
-                    pack.chargedModel?.let { addModel(it, "custom_model_data" to floatValue, "charged" to 1.0) }
-                    pack.fireWorkModel?.let { addModel(it, "custom_model_data" to floatValue, "firework" to 1.0) }
-                    pack.castModel?.let { addModel(it, "custom_model_data" to floatValue, "cast" to 1.0) }
-                    pack.damagedModel?.let { addModel(it, "custom_model_data" to floatValue, "damaged" to 1.0) }
-                }
-
-                // Handle string values
-                pack.customModelData.strings?.forEach { stringValue ->
-                    addModel(pack.model, "custom_model_data" to stringValue)
-                }
-
-                // Handle boolean values
-                pack.customModelData.flags?.forEach { flagValue ->
-                    addModel(pack.model, "custom_model_data" to flagValue)
-                }
-
-                // Fallback if no custom model data is specified
-                if (pack.customModelData.floats.isNullOrEmpty() && pack.customModelData.strings.isNullOrEmpty() && pack.customModelData.flags.isNullOrEmpty()) {
-                    addModel(pack.model)
-                    pack.blockingModel?.let { addModel(it, "blocking" to 1.0) }
-                    pack.pullingModel?.let { addModel(it, "pulling" to 1.0) }
-                    pack.chargedModel?.let { addModel(it, "charged" to 1.0) }
-                    pack.fireWorkModel?.let { addModel(it, "firework" to 1.0) }
-                    pack.castModel?.let { addModel(it, "cast" to 1.0) }
-                    pack.damagedModel?.let { addModel(it, "damaged" to 1.0) }
-                }
-
-                // Add item-specific model if specified
-                pack.itemModel?.let { itemModel ->
-                    val modelPath = "$namespace:item/$itemModel"
-                    pack.customModelData.floats?.forEach { floatValue ->
-                        addModel(modelPath, "custom_model_data" to floatValue)
-                    }
-                    pack.customModelData.strings?.forEach { stringValue ->
-                        addModel(modelPath, "custom_model_data" to stringValue)
-                    }
-                    pack.customModelData.flags?.forEach { flagValue ->
-                        addModel(modelPath, "custom_model_data" to flagValue)
-                    }
-                }
-            })
+            // Overrides - nur hinzufügen wenn nicht leer
+            val overridesArray = buildOverrides(pack, namespace, itemName).toJson()
+            if (overridesArray.length > 0) {
+                put("overrides", overridesArray)
+            }
         }
 
         return json.encodeToString(modelJsonElement)
+    }
+
+    private fun buildOverrides(pack: PackObject, namespace: String, itemName: String): JsonArray {
+        val overrides = JsonArray()
+
+        fun addOverride(modelPath: String?, vararg predicates: Pair<String, Any>) {
+            if (!modelPath.isNullOrBlank()) {
+                val (modelNamespace, modelPathParsed) = parseNamespacePath(modelPath, namespace)
+                val modelLocation = if (modelPathParsed.startsWith("item/") || modelPathParsed.startsWith("block/")) {
+                    modelPathParsed // Already a full model path
+                } else {
+                    "item/$modelPathParsed" // Assume it's an item model
+                }
+
+                val predicateObj = JsonObject().apply {
+                    predicates.forEach { (key, value) ->
+                        when (value) {
+                            is Float -> addProperty(key, value)
+                            is Int -> addProperty(key, value)
+                            is Boolean -> addProperty(key, value)
+                            is String -> addProperty(key, value)
+                            else -> error("Unsupported predicate type: ${value::class}")
+                        }
+                    }
+                }
+
+                // Nur hinzufügen wenn mindestens ein Predicate existiert oder modelPath gültig ist
+                if (predicates.isNotEmpty() || modelPath.isNotBlank()) {
+                    val override = JsonObject().apply {
+                        add("predicate", predicateObj)
+                        addProperty("model", "$modelNamespace:$modelLocation")
+                    }
+                    overrides.add(override)
+                }
+            }
+        }
+
+        // Rest der Funktion bleibt gleich...
+        pack.customModelData.floats?.forEach { floatValue ->
+            pack.model?.let { addOverride(it, "custom_model_data" to floatValue) }
+            pack.blockingModel?.let { addOverride(it, "custom_model_data" to floatValue, "blocking" to 1.0f) }
+            pack.pullingModel?.let { addOverride(it, "custom_model_data" to floatValue, "pulling" to 1.0f) }
+            pack.chargedModel?.let { addOverride(it, "custom_model_data" to floatValue, "charged" to 1.0f) }
+            pack.fireWorkModel?.let { addOverride(it, "custom_model_data" to floatValue, "firework" to 1.0f) }
+            pack.castModel?.let { addOverride(it, "custom_model_data" to floatValue, "cast" to 1.0f) }
+            pack.damagedModel?.let { addOverride(it, "custom_model_data" to floatValue, "damaged" to 1.0f) }
+        }
+
+        pack.customModelData.strings?.forEach { stringValue ->
+            pack.model?.let { addOverride(it, "custom_model_data" to stringValue) }
+        }
+
+        pack.customModelData.flags?.forEach { flagValue ->
+            pack.model?.let { addOverride(it, "custom_model_data" to flagValue) }
+        }
+
+        // Fallback wenn keine custom model data aber models definiert sind
+        if (pack.customModelData.floats.isNullOrEmpty() && pack.customModelData.strings.isNullOrEmpty() && pack.customModelData.flags.isNullOrEmpty()) {
+
+            pack.model?.let { addOverride(it) }
+            pack.blockingModel?.let { addOverride(it, "blocking" to 1.0f) }
+            pack.pullingModel?.let { addOverride(it, "pulling" to 1.0f) }
+            pack.chargedModel?.let { addOverride(it, "charged" to 1.0f) }
+            pack.fireWorkModel?.let { addOverride(it, "firework" to 1.0f) }
+            pack.castModel?.let { addOverride(it, "cast" to 1.0f) }
+            pack.damagedModel?.let { addOverride(it, "damaged" to 1.0f) }
+        }
+
+        return overrides
+    }
+
+    private fun parseNamespacePath(path: String, defaultNamespace: String): Pair<String, String> {
+        return if (path.contains(':')) {
+            val parts = path.split(':')
+            parts[0] to parts[1]
+        } else {
+            defaultNamespace to path
+        }
     }
 
     private fun generateAdditionalModels(
@@ -222,43 +245,66 @@ object ResourcePackManager {
         itemName: String,
         packFiles: MutableMap<String, ByteArray>
     ) {
-        // Generate blocking model if specified
-        pack.blockingModel?.let { modelPath ->
-            val blockingModelJson = buildJsonObject {
-                put("parent", JsonPrimitive(pack.parentModel ?: getParentModel(itemMaterial)))
-                putJsonObject("textures") {
-                    put("layer0", JsonPrimitive(pack.blockingModel))
+        fun createModelFile(modelPath: String?, texturePath: String? = null) {
+            if (modelPath != null) {
+                val (modelNamespace, modelPathParsed) = parseNamespacePath(modelPath, namespace)
+                val fullModelPath = if (modelPathParsed.endsWith(".json")) {
+                    modelPathParsed
+                } else {
+                    "$modelPathParsed.json"
                 }
+
+                val modelName = fullModelPath.substringAfterLast('/').removeSuffix(".json")
+                val modelDir = fullModelPath.substringBeforeLast('/').ifEmpty { "item" }
+
+                val modelJson = buildJsonObject {
+                    put("parent", JsonPrimitive(pack.parentModel ?: getParentModel(itemMaterial)))
+
+                    // Only add textures if they're provided
+                    texturePath?.let {
+                        val (texNamespace, texPath) = parseNamespacePath(it, namespace)
+                        putJsonObject("textures") {
+                            put("layer0", JsonPrimitive("$texNamespace:$texPath"))
+                        }
+                    } ?: pack.textures?.firstOrNull()?.let {
+                        val (texNamespace, texPath) = parseNamespacePath(it, namespace)
+                        putJsonObject("textures") {
+                            put("layer0", JsonPrimitive("$texNamespace:$texPath"))
+                        }
+                    }
+                }
+
+                val fullPath = "assets/$modelNamespace/models/$modelDir/$modelName.json"
+                packFiles[fullPath] = json.encodeToString(modelJson).toByteArray(Charsets.UTF_8)
+                logger.info("Generated additional model: $fullPath")
             }
-            packFiles["assets/$namespace/models/item/${modelPath.split('/').last()}.json"] =
-                json.encodeToString(blockingModelJson).toByteArray(Charsets.UTF_8)
         }
 
-        // Generate pulling model if specified
-        pack.pullingModel?.let { modelPath ->
-            val pullingModelJson = buildJsonObject {
-                put("parent", JsonPrimitive(pack.parentModel ?: getParentModel(itemMaterial)))
-                putJsonObject("textures") {
-                    put("layer0", JsonPrimitive(pack.pullingModel))
-                }
-            }
-            packFiles["assets/$namespace/models/item/${modelPath.split('/').last()}.json"] =
-                json.encodeToString(pullingModelJson).toByteArray(Charsets.UTF_8)
-        }
-
-        // Generate other special models similarly...
+        // Generate models for all special states
+        createModelFile(pack.model, pack.textures?.firstOrNull())
+        createModelFile(pack.blockingModel)
+        createModelFile(pack.pullingModel)
+        createModelFile(pack.chargedModel)
+        createModelFile(pack.fireWorkModel)
+        createModelFile(pack.castModel)
+        createModelFile(pack.damagedModel)
     }
 
     private fun shouldUseLayers(itemMaterial: Material, pack: PackObject): Boolean {
+        // If a custom model is specified, don't use layers
+        if (pack.model != null) return false
+
         val parent = pack.parentModel ?: getParentModel(itemMaterial)
-        return !(parent.startsWith("block/") || parent == "builtin/entity" || itemMaterial?.let { isSpecialItemType(it) } == true)
+        return !(parent.startsWith("block/") || parent == "builtin/entity" || isSpecialItemType(itemMaterial))
     }
 
     private fun isSpecialItemType(material: Material): Boolean {
         return material == Material.TIPPED_ARROW || material == Material.FIREWORK_STAR || material == Material.POTION || material == Material.SPLASH_POTION || material == Material.LINGERING_POTION || material == Material.LEATHER_HORSE_ARMOR
     }
 
-    private fun handleSpecialTextures(itemMaterial: Material, pack: PackObject, texturesObj: JsonObjectBuilder) {
+    private fun handleSpecialTextures(
+        itemMaterial: Material, pack: PackObject, texturesObj: JsonObjectBuilder, namespace: String
+    ) {
         when (itemMaterial) {
             Material.TIPPED_ARROW -> {
                 texturesObj.put("layer0", JsonPrimitive("item/tipped_arrow_head"))
@@ -266,19 +312,25 @@ object ResourcePackManager {
             }
 
             Material.FIREWORK_STAR -> {
-                texturesObj.put("layer0", JsonPrimitive(pack.textures?.get(0) ?: ""))
-                texturesObj.put("layer1", JsonPrimitive("${pack.textures?.get(0)}_overlay"))
+                pack.textures?.firstOrNull()?.let {
+                    val (texNamespace, texPath) = parseNamespacePath(it, namespace)
+                    texturesObj.put("layer0", JsonPrimitive("$texNamespace:$texPath"))
+                    texturesObj.put("layer1", JsonPrimitive("$texNamespace:${texPath}_overlay"))
+                }
             }
 
             Material.POTION, Material.SPLASH_POTION, Material.LINGERING_POTION -> {
                 texturesObj.put("layer0", JsonPrimitive("item/potion_overlay"))
-                texturesObj.put("layer1", JsonPrimitive(pack.textures?.get(0) ?: ""))
+                pack.textures?.firstOrNull()?.let {
+                    val (texNamespace, texPath) = parseNamespacePath(it, namespace)
+                    texturesObj.put("layer1", JsonPrimitive("$texNamespace:$texPath"))
+                }
             }
 
             else -> {
-                // Default case - use first texture as layer0
                 pack.textures?.firstOrNull()?.let {
-                    texturesObj.put("layer0", JsonPrimitive(it))
+                    val (texNamespace, texPath) = parseNamespacePath(it, namespace)
+                    texturesObj.put("layer0", JsonPrimitive("$texNamespace:$texPath"))
                 }
             }
         }
@@ -291,18 +343,13 @@ object ResourcePackManager {
         return when {
             material == Material.SNOW -> "block/snow_height2"
             material == Material.FISHING_ROD || material == Material.WARPED_FUNGUS_ON_A_STICK || material == Material.CARROT_ON_A_STICK -> "item/handheld_rod"
-
             material == Material.SCAFFOLDING -> "block/scaffolding_stable"
             material == Material.RESPAWN_ANCHOR -> "block/respawn_anchor_0"
             material == Material.CONDUIT || material == Material.SHIELD || material == Material.CHEST || material == Material.TRAPPED_CHEST || material == Material.ENDER_CHEST -> "builtin/entity"
-
             material == Material.SMALL_DRIPLEAF -> "block/small_dripleaf_top"
             material == Material.SPORE_BLOSSOM || material == Material.BIG_DRIPLEAF || material == Material.AZALEA || material == Material.FLOWERING_AZALEA -> "block/$materialName"
-
             material == Material.CHORUS_FLOWER || material == Material.CHORUS_PLANT || material == Material.END_ROD -> "block/$materialName"
-
             material == Material.SMALL_AMETHYST_BUD || material == Material.MEDIUM_AMETHYST_BUD || material == Material.LARGE_AMETHYST_BUD -> "item/amethyst_bud"
-
             material == Material.AMETHYST_CLUSTER -> "item/generated"
             tools.any { material.name.contains(it) } -> "item/handheld"
             Tag.SHULKER_BOXES.isTagged(material) -> "item/template_shulker_box"

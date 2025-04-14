@@ -52,7 +52,7 @@ object LoadDefaultData {
                     customModelData = CustomModelData(
                         flags = mutableListOf(),
                         //colors = mutableListOf(),
-                        floats = mutableListOf(10000F),
+                        floats = mutableListOf(343777F),
                         strings = mutableListOf(),
                     ),
                     model = "",
