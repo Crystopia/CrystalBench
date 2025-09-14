@@ -1,0 +1,10 @@
+{
+  "id": "crystalbench",
+  "name": "CrystalBench",
+  "version": "0.1.0",
+  "description": "Resourcepack host and Manager of the Pack network.",
+  "authors": [
+    "xyzjesper"
+  ],
+  "main": "net.crystalbench.CrystalBenchVelocity"
+}
