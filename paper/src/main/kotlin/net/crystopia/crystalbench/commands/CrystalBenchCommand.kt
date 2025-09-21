@@ -8,7 +8,6 @@ import dev.jorel.commandapi.kotlindsl.stringArgument
 import net.crystopia.crystalbench.api.CrystalItems
 import net.crystopia.crystalbench.commands.subcommands.GiveItemCommand
 import net.crystopia.crystalbench.commands.subcommands.InfoCommand
-import net.crystopia.crystalbench.commands.subcommands.PackCommand
 import net.crystopia.crystalbench.commands.subcommands.ReloadItemsCommand
 import net.crystopia.crystalbench.inventory.InventuryBuilder
 import org.bukkit.entity.Player
@@ -40,9 +39,6 @@ object CrystalBenchCommand {
             literalArgument("all") {
 
             }
-        }
-        literalArgument("pack") {
-            executes(PackCommand())
         }
         literalArgument("info") {
             executes(InfoCommand())

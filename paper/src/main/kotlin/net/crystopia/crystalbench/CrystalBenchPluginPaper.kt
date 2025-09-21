@@ -5,6 +5,7 @@ import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPIBukkitConfig
 import gg.flyte.twilight.twilight
 import net.crystopia.crystalbench.api.CrystalItems
+import net.crystopia.crystalbench.api.events.RequestItemsEvent
 import net.crystopia.crystalbench.commands.CrystalBenchCommand
 import net.crystopia.crystalbench.config.ConfigManager
 import net.crystopia.crystalbench.config.LoadDefaultData
@@ -27,8 +28,6 @@ class CrystalBenchPluginPaper : JavaPlugin() {
         Log.info("Load Folder Structure")
         LoadDefaultData.loadStructure()
         ConfigManager.settings
-        CrystalItems.loadItems()
-
     }
 
     override fun onEnable() {
@@ -37,19 +36,27 @@ class CrystalBenchPluginPaper : JavaPlugin() {
         // Twilight
         val twilight = twilight(this)
 
-        // Commands
+        CrystalItems.loadItems()
+        
+        // Load External Items
+        val event = RequestItemsEvent
+        server.pluginManager.callEvent(event)
+        event.getRegistered().forEach { (id, obj) ->
+            CrystalItems.registerItem(id, obj)
+        }
+
+        // Command
         CrystalBenchCommand
 
         Log.info(
-            """Loaded CrystalBench v.${description.version}
-  - Server Software Information:
-  - Version: ${server.minecraftVersion}
-        """.trimIndent()
+            """
+            Loaded CrystalBench v.${description.version}
+            - Server Software Information:
+            - Version: ${server.minecraftVersion}
+            """.trimIndent()
         )
-
+        
         Log.info("Loaded CrystalBench Items: ${CrystalItems.itemCount()}")
-
-
     }
 
     override fun onDisable() {

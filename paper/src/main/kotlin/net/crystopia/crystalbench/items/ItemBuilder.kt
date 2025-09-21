@@ -3,8 +3,8 @@
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import net.crystopia.crystalbench.CrystalBenchPluginPaper
-import net.crystopia.crystalbench.config.models.CustomData
-import net.crystopia.crystalbench.config.models.ItemObject
+import net.crystopia.crystalbench.config.models.items.CustomData
+import net.crystopia.crystalbench.config.models.items.ItemObject
 import net.crystopia.crystalbench.utils.StringListPersistentDataType
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
@@ -24,7 +24,7 @@ import org.bukkit.inventory.meta.components.UseCooldownComponent
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.tag.DamageTypeTags
 
-class ItemParser(private val itemObject: ItemObject) {
+class ItemBuilder(val itemObject: ItemObject) {
     private val mm = MiniMessage.miniMessage()
 
     fun build(): ItemStack {
@@ -34,7 +34,10 @@ class ItemParser(private val itemObject: ItemObject) {
         val meta = item.itemMeta ?: return item
 
         meta.persistentDataContainer.set(
-            NamespacedKey(CrystalBenchPluginPaper.instance, "id"), PersistentDataType.STRING, itemObject.id as String
+            CrystalKeys.ID, PersistentDataType.STRING, itemObject.id as String
+        )
+        meta.persistentDataContainer.set(
+            CrystalKeys.NAME, PersistentDataType.STRING, itemObject.name as String
         )
 
         // Displayname
@@ -80,7 +83,7 @@ class ItemParser(private val itemObject: ItemObject) {
         }
         if (itemObject.disableEnchanting) {
             meta.persistentDataContainer.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "disable_enchanting"), PersistentDataType.BOOLEAN, true
+                CrystalKeys.DISABLEENTCHANTING, PersistentDataType.BOOLEAN, true
             )
         }
 
@@ -150,73 +153,69 @@ class ItemParser(private val itemObject: ItemObject) {
         meta.isGlider = itemObject.components!!.glider != null
         // Repairable
         meta.persistentDataContainer.set(
-            NamespacedKey(
-                CrystalBenchPluginPaper.instance,
-                "repairable",
-
-                ), PersistentDataType.STRING, itemObject.components!!.repairable.toString()
+            CrystalKeys.REPAIRABLE, PersistentDataType.STRING, itemObject.components!!.repairable.toString()
         )
 
         // Consumable
         if (itemObject.components?.consumable != null) {
             val consume = itemObject.components?.consumable!!
-            val subContainer = Bukkit.getItemFactory().getItemMeta(Material.STONE).persistentDataContainer
-            val subContainerEffect = Bukkit.getItemFactory().getItemMeta(Material.STONE).persistentDataContainer
+            val subContainer = Bukkit.getItemFactory().getItemMeta(itemObject.material!!).persistentDataContainer
+            val subContainerEffect = Bukkit.getItemFactory().getItemMeta(itemObject.material!!).persistentDataContainer
 
             subContainer.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "amount"),
+                CrystalKeys.AMOUNT,
                 PersistentDataType.STRING,
                 consume.sound.toString()
             )
             subContainer.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "consumeParticles"),
+                CrystalKeys.CONSUMEPARTICLES,
                 PersistentDataType.BOOLEAN,
                 consume.consumeParticles!!
             )
             subContainer.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "consumeSeconds"),
+                CrystalKeys.CONSUMESECONDS,
                 PersistentDataType.DOUBLE,
                 consume.consumeSeconds!!
             )
             subContainer.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "animation"), PersistentDataType.STRING, consume.animation!!
+                CrystalKeys.ANIMATION, PersistentDataType.STRING, consume.animation!!
             )
 
             subContainerEffect.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "applyEffects"),
+                CrystalKeys.APPLYEFFECTS,
                 StringListPersistentDataType,
                 consume.effect!!.applyEffects!!.map { it.toString() })
             subContainerEffect.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "removeEffects"),
+                CrystalKeys.REMOVEEFFECTS,
                 StringListPersistentDataType,
                 consume.effect!!.removeEffects!!.map { it.toString() })
             subContainerEffect.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "clearAllEffects"),
+                CrystalKeys.CLEARALLEFFECTS,
                 StringListPersistentDataType,
                 consume.effect!!.clearAllEffects!!.map { it.toString() })
             subContainerEffect.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "teleportRandomly"),
+                CrystalKeys.TELEPORTRANDOMLY,
                 PersistentDataType.DOUBLE,
                 consume.effect!!.teleportRandomly!!.diameter
             )
             subContainerEffect.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "playSound"),
+                CrystalKeys.PLAYSOUND,
                 PersistentDataType.STRING,
                 consume.effect!!.playSound.toString()
             )
             subContainerEffect.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "applyEffects"),
+                CrystalKeys.APPLYEFFECTS,
                 StringListPersistentDataType,
                 consume.effect!!.applyEffects!!.map { it.toString() } // oder .name etc.
             )
             subContainer.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "effect"),
+                CrystalKeys.EFFECT,
                 PersistentDataType.TAG_CONTAINER,
                 subContainerEffect
             )
 
             meta.persistentDataContainer.set(
-                NamespacedKey(CrystalBenchPluginPaper.instance, "consumable"), PersistentDataType.TAG_CONTAINER, subContainer
+                CrystalKeys.CONSUMABLE, PersistentDataType.TAG_CONTAINER, subContainer
             )
 
         }

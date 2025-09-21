@@ -1,20 +1,15 @@
-﻿package net.crystopia.crystalbench.config.models
+﻿package net.crystopia.crystalbench.config.models.items
 
 import AttributeSerializer
 import EquipmentSlotGroupSerializer
-import io.papermc.paper.registry.keys.EnchantmentKeys
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
-import org.bukkit.enchantments.Enchantment
-import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.ItemFlag
 
 @Serializable
-data class Item(
+data class Items(
     val items: Map<String, ItemObject> = mutableMapOf(),
 )
 

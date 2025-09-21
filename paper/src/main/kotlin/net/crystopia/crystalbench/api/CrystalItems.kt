@@ -1,20 +1,27 @@
 ﻿package net.crystopia.crystalbench.api
 
 import net.crystopia.crystalbench.CrystalBenchPluginPaper
+import net.crystopia.crystalbench.api.events.RequestItemsEvent
 import net.crystopia.crystalbench.config.ConfigManager
-import net.crystopia.crystalbench.config.models.ItemObject
-import net.crystopia.crystalbench.items.ItemParser
-import org.bukkit.NamespacedKey
+import net.crystopia.crystalbench.items.CrystalStack
+import net.crystopia.crystalbench.items.ItemBuilder
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 
 object CrystalItems {
-    private var items: MutableMap<String, ItemObject> = mutableMapOf()
+    var items: MutableMap<String, CrystalStack> = mutableMapOf()
 
     @JvmStatic
     fun loadItems() {
+        val event = RequestItemsEvent
+        CrystalBenchPluginPaper.instance.server.pluginManager.callEvent(event)
+        event.getRegistered().forEach { (id, obj) ->
+            registerItem(id, obj)
+        }
+
         val map = ConfigManager.loadConfigs()
-        items = map.toMutableMap()
+        map.toMutableMap().forEach { (id, stack) ->
+            items[id] = CrystalStack(ItemBuilder(stack).build())
+        }
     }
 
     @JvmStatic
@@ -23,34 +30,26 @@ object CrystalItems {
     }
 
     @JvmStatic
-    fun items(): MutableMap<String, ItemObject> {
+    fun registerItem(name: String, stack: CrystalStack): Boolean {
+        if (!items.containsKey(name)) {
+            return false
+        }
+        items[name] = stack
+        return true
+    }
+
+    @JvmStatic
+    fun items(): MutableMap<String, CrystalStack> {
         return items
     }
 
-    fun getItemObjectById(id: String): ItemStack? {
+    fun getItem(id: String): CrystalStack? {
+        return items[id]
+    }
+
+    fun getItemObjectById(id: String): ItemStack {
         val item = items[id]
-        return ItemParser(item!!).build()
-    }
-
-    fun generateItemStacks(): MutableList<ItemStack> {
-        val itemStacks = mutableMapOf<String, ItemStack>()
-        items.forEach {
-            val itemStack = ItemParser(it.value).build()
-            itemStacks[it.key] = itemStack
-        }
-        return itemStacks.map { it.value }.toMutableList()
-    }
-
-    fun getItemObjectByItemStack(itemStack: ItemStack): ItemObject? {
-        val itemStackId = itemStack.itemMeta?.persistentDataContainer!!.get(
-            NamespacedKey(CrystalBenchPluginPaper.instance, "id"), PersistentDataType.STRING
-        )
-        items.forEach { item ->
-            if (item.value.id == itemStackId) {
-                return item.value
-            }
-        }
-        return null
+        return item!!.toItemStack()
     }
 }
 

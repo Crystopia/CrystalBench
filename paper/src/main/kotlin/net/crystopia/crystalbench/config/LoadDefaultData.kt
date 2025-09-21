@@ -1,6 +1,19 @@
 ﻿package net.crystopia.crystalbench.config
 
-import net.crystopia.crystalbench.config.models.*
+import net.crystopia.crystalbench.config.models.items.AttributeData
+import net.crystopia.crystalbench.config.models.items.Consumable
+import net.crystopia.crystalbench.config.models.items.Cooldown
+import net.crystopia.crystalbench.config.models.items.CustomData
+import net.crystopia.crystalbench.config.models.items.CustomModelData
+import net.crystopia.crystalbench.config.models.items.Effects
+import net.crystopia.crystalbench.config.models.items.Equippable
+import net.crystopia.crystalbench.config.models.items.Food
+import net.crystopia.crystalbench.config.models.items.ItemComponent
+import net.crystopia.crystalbench.config.models.items.ItemObject
+import net.crystopia.crystalbench.config.models.items.PackObject
+import net.crystopia.crystalbench.config.models.items.PlaySound
+import net.crystopia.crystalbench.config.models.items.PotionEffect
+import net.crystopia.crystalbench.config.models.items.TeleportRandomly
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
@@ -14,33 +27,13 @@ import java.io.File
 object LoadDefaultData {
 
     fun loadStructure() {
-        val pack = File("plugins/CrystalBench/pack")
         val configs = File("plugins/CrystalBench/configs")
-        val sound = File("plugins/CrystalBench/sound.json")
-
-        // Pack Data
-        val assets = File("plugins/CrystalBench/pack/assets")
-        val buildedPackFolder = File("plugins/CrystalBench/out")
-        if (!buildedPackFolder.exists()) {
-            buildedPackFolder.mkdirs()
-        }
-        if (!assets.exists()) {
-            assets.mkdirs()
-        }
-
-        if (!pack.exists()) {
-            pack.mkdirs()
-
-        }
+        
         if (!configs.exists()) {
             configs.mkdirs()
 
         }
-        if (!sound.exists()) {
-            sound.createNewFile()
-        }
-
-
+        
         ConfigManager.saveConfig(
             "default", "default", ItemObject(
                 name = "default",
@@ -136,7 +129,7 @@ object LoadDefaultData {
                     durability = 5,
                     repairable = Material.APPLE,
                     enchantable = 1,
-                    hideTooltip = true,
+                    hideTooltip = false,
                     glider = true,
                     cooldown = Cooldown(
                         cooldown = 0.4,
@@ -145,7 +138,5 @@ object LoadDefaultData {
                 )
             )
         )
-
-
     }
 }

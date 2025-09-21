@@ -81,8 +81,8 @@ tasks {
 }
 
 paper {
-    name = projectName
-    version = version
+    name = "CrystalBench-Paper"
+    version = projectVersion
     description = projectDescription
     main = mainClass
     authors = listOf("xyzjesper")

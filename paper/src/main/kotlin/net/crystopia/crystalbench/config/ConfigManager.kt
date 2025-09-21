@@ -3,9 +3,9 @@ package net.crystopia.crystalbench.config
 import Log
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.crystopia.crystalbench.config.models.Item
-import net.crystopia.crystalbench.config.models.ItemObject
 import net.crystopia.crystalbench.config.models.SettingsData
+import net.crystopia.crystalbench.config.models.items.ItemObject
+import net.crystopia.crystalbench.config.models.items.Items
 import net.crystopia.onlyup.config.json
 import net.crystopia.onlyup.config.loadConfig
 import net.crystopia.onlyup.config.loadFromFile
@@ -31,12 +31,12 @@ object ConfigManager {
                 try {
                     val jsonContent = jsonFile.readText()
 
-                    val configItem = json.decodeFromString<Item>(jsonContent)
+                    val configItem = json.decodeFromString<Items>(jsonContent)
                     configItem.items.forEach { (key, item) ->
                         configs[key] = item
                     }
                 } catch (e: Exception) {
-                    Log.error("Failed to load config from ${jsonFile.name}: ${e.message}!")
+                    Log.error("Failed to load config from ${jsonFile.name}: ${e.message}")
                 }
             }
         }

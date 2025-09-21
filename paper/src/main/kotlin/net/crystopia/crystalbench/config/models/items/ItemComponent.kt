@@ -1,4 +1,4 @@
-﻿package net.crystopia.crystalbench.config.models
+﻿package net.crystopia.crystalbench.config.models.items
 
 import PotionEffectTypeSerializer
 import kotlinx.serialization.Serializable

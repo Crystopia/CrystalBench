@@ -1,6 +1,5 @@
 package net.crystopia.crystalbench.config.models
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.resource.ResourcePackStatus
 
@@ -27,7 +26,7 @@ data class PackHost(
 
 @Serializable
 data class Action(
-    var message: String?, var kick: Boolean?, var sendToServer: String?
+    var message: String?, var kick: Boolean?, var sendToServer: String? = "Lobby"
 )
 
 
