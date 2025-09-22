@@ -1,6 +1,5 @@
 ﻿package net.crystopia.crystalbench
 
-import Log
 import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPIBukkitConfig
 import gg.flyte.twilight.twilight
@@ -9,6 +8,7 @@ import net.crystopia.crystalbench.api.events.RequestItemsEvent
 import net.crystopia.crystalbench.commands.CrystalBenchCommand
 import net.crystopia.crystalbench.config.ConfigManager
 import net.crystopia.crystalbench.config.LoadDefaultData
+import net.crystopia.crystalshard.utils.Log
 import org.bukkit.plugin.java.JavaPlugin
 
 class CrystalBenchPluginPaper : JavaPlugin() {
@@ -32,11 +32,9 @@ class CrystalBenchPluginPaper : JavaPlugin() {
 
     override fun onEnable() {
         CommandAPI.onEnable()
-
-        // Twilight
-        val twilight = twilight(this)
-
         CrystalItems.loadItems()
+
+        val twilight = twilight(this)
         
         // Load External Items
         val event = RequestItemsEvent

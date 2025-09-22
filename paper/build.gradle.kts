@@ -20,23 +20,13 @@ val commandAPIVersion = properties["commandAPIVersion"] as String
 group = groupID
 version = projectVersion
 
-repositories {
-    mavenCentral()
-    maven {
-        name = "papermc"
-        url = uri("https://repo.papermc.io/repository/maven-public/")
-    }
-    maven("https://repo.flyte.gg/releases")
-    maven("https://repo.nexomc.com/releases")
-}
-
 dependencies {
     // Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-
-    //implementation("com.nexomc:nexo:1.3.0")
+    // Crystal Shard
+    implementation("net.crystopia:crystalshard:0.1.0")
 
     // Paper
     compileOnly("io.papermc.paper:paper-api:${mcVersion}-R0.1-SNAPSHOT")

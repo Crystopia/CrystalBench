@@ -1,11 +1,11 @@
 package net.crystopia.crystalbench.config
 
-import Log
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.crystopia.crystalbench.config.models.SettingsData
 import net.crystopia.crystalbench.config.models.items.ItemObject
 import net.crystopia.crystalbench.config.models.items.Items
+import net.crystopia.crystalshard.utils.Log
 import net.crystopia.onlyup.config.json
 import net.crystopia.onlyup.config.loadConfig
 import net.crystopia.onlyup.config.loadFromFile
