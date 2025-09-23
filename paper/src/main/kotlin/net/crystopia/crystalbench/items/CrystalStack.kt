@@ -37,13 +37,18 @@ class CrystalStack(private val handle: ItemStack) : ItemStack() {
         interactActions[id!!] = action
     }
 
-    val id: String?
+    var id: String?
         get() = handle.itemMeta?.persistentDataContainer?.get(
             CrystalKeys.ID, org.bukkit.persistence.PersistentDataType.STRING
         )
-    val name: String?
-        get() = handle.itemMeta?.persistentDataContainer?.get(
-            CrystalKeys.NAME, org.bukkit.persistence.PersistentDataType.STRING
-        )
-
+        set(value) {
+            handle.itemMeta?.persistentDataContainer?.set(
+                CrystalKeys.ID, org.bukkit.persistence.PersistentDataType.STRING, value as String
+            )
+        }
+    var isFurniture: Boolean?
+        get() = isFurniture
+        set(value) {
+            isFurniture = value
+        }
 }
