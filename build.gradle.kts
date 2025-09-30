@@ -3,6 +3,7 @@
 allprojects {
     repositories {
         mavenCentral()
+        mavenLocal()
         maven("https://repo.flyte.gg/releases")
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://oss.sonatype.org/content/groups/public/") {

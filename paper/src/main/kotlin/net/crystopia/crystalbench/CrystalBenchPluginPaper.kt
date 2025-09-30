@@ -8,8 +8,10 @@ import net.crystopia.crystalbench.api.events.RequestItemsEvent
 import net.crystopia.crystalbench.commands.CrystalBenchCommand
 import net.crystopia.crystalbench.config.ConfigManager
 import net.crystopia.crystalbench.config.LoadDefaultData
+import net.crystopia.crystalshard.events.CrystalEvents
 import net.crystopia.crystalshard.utils.Log
 import org.bukkit.plugin.java.JavaPlugin
+
 
 class CrystalBenchPluginPaper : JavaPlugin() {
 
@@ -24,7 +26,7 @@ class CrystalBenchPluginPaper : JavaPlugin() {
     override fun onLoad() {
         CommandAPI.onLoad(CommandAPIBukkitConfig(this).verboseOutput(true))
 
-        // Load Data
+        // Load Data  
         Log.info("Load Folder Structure")
         LoadDefaultData.loadStructure()
         ConfigManager.settings
@@ -32,10 +34,14 @@ class CrystalBenchPluginPaper : JavaPlugin() {
 
     override fun onEnable() {
         CommandAPI.onEnable()
+
+        server.pluginManager.registerEvents(CrystalEvents, this)
+        server.pluginManager.registerEvents(PlayerJoinEvent, this)
+        val twilight = twilight(this)
         CrystalItems.loadItems()
 
-        val twilight = twilight(this)
-        
+        val server = this.server
+
         // Load External Items
         val event = RequestItemsEvent
         server.pluginManager.callEvent(event)
@@ -62,5 +68,4 @@ class CrystalBenchPluginPaper : JavaPlugin() {
 
         Log.info("Disabling CrystalBench!")
     }
-
 }

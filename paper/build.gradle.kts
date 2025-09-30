@@ -1,10 +1,12 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+import org.gradle.kotlin.dsl.assemble
 
 plugins {
     kotlin("jvm") version "2.0.20-Beta1"
     id("com.gradleup.shadow") version "9.0.0-beta8"
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id("de.eldoria.plugin-yml.paper") version "0.7.0"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
     kotlin("plugin.serialization") version "2.1.0"
 }
 
@@ -26,10 +28,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // Crystal Shard
-    implementation("net.crystopia:crystalshard:0.1.0")
+    implementation("net.crystopia:crystalshard:0.2.8")
 
     // Paper
-    compileOnly("io.papermc.paper:paper-api:${mcVersion}-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
 
     // Twilight
     implementation("gg.flyte:twilight:${twilightVersion}")
@@ -77,5 +79,5 @@ paper {
     main = mainClass
     authors = listOf("xyzjesper")
     apiVersion = "1.21"
-    load = BukkitPluginDescription.PluginLoadOrder.STARTUP
+    load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
 }
