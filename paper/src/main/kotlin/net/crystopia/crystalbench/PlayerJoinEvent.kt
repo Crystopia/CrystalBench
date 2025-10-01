@@ -2,6 +2,8 @@ package net.crystopia.crystalbench
 
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
+import gg.flyte.twilight.event.event
+import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToMessageDecoder
 import net.crystopia.crystalshard.builder.EntityBuilder
 import net.minecraft.Optionull
@@ -18,6 +20,7 @@ import org.bukkit.Material
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
@@ -107,18 +110,42 @@ object PlayerJoinEvent : Listener {
                 serverPlayer.connection.send(setEquipmentPacket)
             }
 
-            val serverPlayer = (event.player as CraftPlayer).handle
-
-            val channel = serverPlayer.connection.connection.channel;
-
-            if (channel.pipeline().get("PacketInjector") != null) {
-            }
-
-           // channel.pipeline().addAfter("decoder", "PacketInjector", MessageToMessageDecoder<ServerboundInteractPacket>() {
-           // })
+            inject(event.player)
             
         }
     }
+
+    fun inject(player: Player): Boolean {
+        val serverPlayer = (player as CraftPlayer).handle
+        val channel = serverPlayer.connection.connection.channel
+
+        if (channel.pipeline()["PacketInjector"] != null) {
+            return false
+        }
+
+        channel.pipeline().addAfter(
+            "decoder", "PacketInjector", object : MessageToMessageDecoder<ServerboundInteractPacket>() {
+                override fun decode(
+                    ctx: ChannelHandlerContext, msg: ServerboundInteractPacket, out: MutableList<Any>
+                ) {
+                    out.add(msg)
+
+                    println(msg)
+                    CrystalBenchPluginPaper.instance.server.scheduler.runTaskLater(
+                        CrystalBenchPluginPaper.instance,
+                        Runnable {
+                            val interactPacket = msg.entityId
+                            println(interactPacket)
+                        },
+                        1L
+                    );
+                }
+            })
+
+        return true
+    }
+
+
 
     @EventHandler
     fun onPlayerInteractEntityEvent(event: PlayerInteractEntityEvent) {
