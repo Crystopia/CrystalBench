@@ -4,5 +4,6 @@ plugins {
 
 rootProject.name = "CrystalBench"
 
-include("paper")
-include("velocity")
+include(":paper")
+include(":velocity")
+include(":common")

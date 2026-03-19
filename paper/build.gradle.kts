@@ -1,26 +1,15 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
-import org.gradle.kotlin.dsl.assemble
 
 plugins {
-    kotlin("jvm") version "2.0.20-Beta1"
-    id("com.gradleup.shadow") version "9.0.0-beta8"
-    id("xyz.jpenilla.run-paper") version "2.3.1"
-    id("de.eldoria.plugin-yml.paper") version "0.7.0"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("jvm")
+    id("com.gradleup.shadow")
+    id("xyz.jpenilla.run-paper")
+    id("de.eldoria.plugin-yml.paper")
+    id("io.papermc.paperweight.userdev")
+    kotlin("plugin.serialization")
 }
 
-val mcVersion = properties["minecraftVerions"] as String
-val projectVersion = properties["version"] as String
-val projectName = properties["name"] as String
-val groupID = properties["group"] as String
-val mainClass = properties["main"] as String
-val projectDescription = properties["description"] as String
-val twilightVersion = properties["twilightVersion"] as String
-val commandAPIVersion = properties["commandAPIVersion"] as String
-
-group = groupID
-version = projectVersion
+val projectVersion = version
 
 dependencies {
     // Kotlin
@@ -28,29 +17,26 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // Crystal Shard
-    implementation("net.crystopia:crystalshard:0.2.8")
+    implementation("net.crystopia.crystalshard:common:1.0.0")
+    implementation("net.crystopia.crystalshard:paper-core:1.0.0")
+    implementation("net.crystopia.crystalshard:paper-box:1.0.0")
+    implementation("net.crystopia.crystalshard:paper-custom:1.0.0")
+    implementation("net.crystopia.crystalshard:paper-dhl:1.0.0")
+    implementation("net.crystopia.crystalshard:paper-pack:1.0.0")
 
     // Paper
-    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
-
-    // Twilight
-    implementation("gg.flyte:twilight:${twilightVersion}")
+    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
 
     // Command API
-    compileOnly("dev.jorel:commandapi-bukkit-core:${commandAPIVersion}")
-    implementation("dev.jorel:commandapi-bukkit-shade-mojang-mapped:${commandAPIVersion}")
-    implementation("dev.jorel:commandapi-bukkit-kotlin:${commandAPIVersion}")
+    compileOnly("dev.jorel:commandapi-paper-core:11.1.0")
+    implementation("dev.jorel:commandapi-bukkit-shade-mojang-mapped:11.1.0")
+    implementation("dev.jorel:commandapi-paper-kotlin:11.1.0")
 
-    // Creative
-    implementation("team.unnamed:creative-api:1.7.3")
-    // Serializer for Minecraft format (ZIP / Folder)
-    implementation("team.unnamed:creative-serializer-minecraft:1.7.3")
-    // Resource Pack server
-    implementation("team.unnamed:creative-server:1.7.3")
+
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(22)
 }
 
 tasks.shadowJar {
@@ -65,18 +51,18 @@ tasks.build {
 
 tasks {
     shadowJar {
-        archiveBaseName.set("CrystalBenchPaper")
+        archiveBaseName.set("CrystalBenchPaper-$projectVersion")
     }
     runServer {
-        minecraftVersion(mcVersion)
+        minecraftVersion("1.21.11")
     }
 }
 
 paper {
     name = "CrystalBench-Paper"
-    version = projectVersion
-    description = projectDescription
-    main = mainClass
+    version = "$projectVersion"
+    description = "ResourcePack Manager for Custom Items, Models and more!"
+    main = "net.crystopia.crystalbench.CrystalBenchPluginPaper"
     authors = listOf("xyzjesper")
     apiVersion = "1.21"
     load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
