@@ -1,0 +1,11 @@
+{
+  "pack": {
+    "description": "test",
+    "pack_format": 75,
+    "supported_formats": [
+      75
+    ],
+    "min_format": [],
+    "max_format": []
+  }
+}

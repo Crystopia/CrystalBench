@@ -1,19 +1,4 @@
-package net.crystopia.crystalbench.api.http
-
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.response.header
-import io.ktor.server.response.respond
-import io.ktor.server.response.respondOutputStream
-import io.ktor.server.routing.get
-import io.ktor.server.routing.routing
-import net.crystopia.crystalbench.api.config.ConfigManager
-import java.io.File
-import java.io.IOException
+package net.crystopia.crystalbench.common.http
 
 object PackAPI {
 

@@ -7,3 +7,4 @@ rootProject.name = "CrystalBench"
 include(":paper")
 include(":velocity")
 include(":common")
+include("api")

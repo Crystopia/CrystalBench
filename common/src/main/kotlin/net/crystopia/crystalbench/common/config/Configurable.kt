@@ -1,4 +1,4 @@
-package net.crystopia.crystalbench.api.config
+package net.crystopia.crystalbench.common.config
 
 interface Configurable {
     fun save()
